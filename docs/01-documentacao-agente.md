@@ -62,10 +62,10 @@ flowchart TD
 
 | Componente | Descrição |
 |------------|-----------|
-| Interface | [Interface conversacional desenvolvida em Streamlit] |
-| LLM | [Modelo de linguagem local executado via Ollama] |
-| Base de Conhecimento | [Base documental composta por cartilhas, alertas e materiais educativos sobre fraudes financeiras e digitais provenientes de órgãos oficiais e instituições de cibersegurança] |
-| Validação | [Verificação de coerência das respostas e limitação das respostas ao conteúdo da base de conhecimento] |
+| Interface | Interface conversacional desenvolvida em Streamlit |
+| LLM | Modelo de linguagem local executado via Ollama |
+| Base de Conhecimento | Base documental composta por cartilhas, alertas e materiais educativos sobre fraudes financeiras e digitais provenientes de órgãos oficiais e instituições de cibersegurança |
+| Validação | Verificação de coerência das respostas e limitação das respostas ao conteúdo da base de conhecimento |
 
 ---
 
