@@ -1,4 +1,30 @@
 data,descricao,categoria,valor,tipo
+2025-08-01,Salário,receita,5000.00,entrada
+2025-08-02,Aluguel,moradia,1200.00,saida
+2025-08-04,Supermercado,alimentacao,520.00,saida
+2025-08-05,Netflix,lazer,55.90,saida
+2025-08-06,Farmácia,saude,42.00,saida
+2025-08-08,Restaurante,alimentacao,95.00,saida
+2025-08-10,Uber,transporte,38.00,saida
+2025-08-12,Conta de Luz,moradia,165.00,saida
+2025-08-15,Academia,saude,99.00,saida
+2025-08-18,Combustível,transporte,230.00,saida
+2025-08-20,Show de música,lazer,120.00,saida
+2025-08-22,Supermercado,alimentacao,210.00,saida
+2025-08-28,Aplicação Tesouro Selic,investimento,300.00,saida
+2025-09-01,Salário,receita,5000.00,entrada
+2025-09-02,Aluguel,moradia,1200.00,saida
+2025-09-03,Supermercado,alimentacao,480.00,saida
+2025-09-05,Netflix,lazer,55.90,saida
+2025-09-07,Farmácia,saude,67.50,saida
+2025-09-09,Restaurante,alimentacao,140.00,saida
+2025-09-11,Uber,transporte,52.00,saida
+2025-09-13,Conta de Luz,moradia,172.00,saida
+2025-09-15,Academia,saude,99.00,saida
+2025-09-18,Combustível,transporte,245.00,saida
+2025-09-20,Consulta médica,saude,180.00,saida
+2025-09-23,Supermercado,alimentacao,195.00,saida
+2025-09-26,Aplicação Tesouro Selic,investimento,300.00,saida
 2025-10-01,Salário,receita,5000.00,entrada
 2025-10-02,Aluguel,moradia,1200.00,saida
 2025-10-03,Supermercado,alimentacao,450.00,saida
