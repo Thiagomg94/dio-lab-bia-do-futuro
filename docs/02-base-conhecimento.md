@@ -2,13 +2,12 @@
 
 ## Dados Utilizados
 
-
-| Arquivo | Formato | Utilização no Agente |
-|---------|---------|---------------------|
-| `historico_atendimento.csv` | CSV | Contextualizar interações anteriores afim de dar continuidade ao atendimento. |
-| `perfil_investidor.json` | JSON | Personalizar recomendações sobre dúvidas e necessidades do cliente. |
-| `produtos_financeiros.json` | JSON | Sugerir produtos adequados ao perfil do cliente |
-| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente |
+| Arquivo                     | Formato | Utilização no Agente                                                          |
+| --------------------------- | ------- | ----------------------------------------------------------------------------- |
+| `historico_atendimento.csv` | CSV     | Contextualizar interações anteriores afim de dar continuidade ao atendimento. |
+| `perfil_investidor.json`    | JSON    | Personalizar recomendações sobre dúvidas e necessidades do cliente.           |
+| `produtos_financeiros.json` | JSON    | Sugerir produtos adequados ao perfil do cliente                               |
+| `transacoes.csv`            | CSV     | Analisar padrão de gastos do cliente                                          |
 
 ---
 
@@ -28,6 +27,7 @@ Sim. Expandi os dados de transações, totalizando 36 transações entre agosto 
 ## Estratégia de Integração
 
 ### Como os dados são carregados?
+
 > Descreva como seu agente acessa a base de conhecimento.
 
 ```python
@@ -48,6 +48,7 @@ with open("data/produtos_financeiros.json", "r", encoding="utf-8") as archive:
 ```
 
 ### Como os dados são usados no prompt?
+
 > Os dados vão no system prompt? São consultados dinamicamente?
 
 De forma simplificada, os dados serão injetados no system prompt, garantindo que o agente tenha o melhor contexto possível antes de responder. É válido lembrar que em soluções robustas o ideal é que os dados sejam consultados dinamicamente, via RAG ou chamadas a APIs.
@@ -174,6 +175,7 @@ data,descricao,categoria,valor,tipo
 2025-10-20,Academia,saude,99.00,saida
 2025-10-25,Combustível,transporte,250.00,saida
 ```
+
 ---
 
 ## Exemplo de Contexto Montado
