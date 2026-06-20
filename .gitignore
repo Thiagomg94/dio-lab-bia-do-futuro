@@ -1,0 +1,35 @@
+# === Ambiente virtual Python ===
+.venv/
+venv/
+env/
+
+# === Cache e arquivos compilados do Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+build/
+dist/
+
+# === Variáveis de ambiente
+.env
+
+# === IDE (JetBrains / PyCharm) ===
+.idea/
+
+# === Sistema operacional ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs ===
+*.log
+
+# === Jupyter (caso use notebooks em examples/) ===
+.ipynb_checkpoints/
+
+# === Observação ===
+# A pasta data/ NÃO está sendo ignorada de propósito: ela contém os dados
+# mockados do João Silva (perfil, transações, metas, histórico, produtos),
+# que fazem parte do projeto e precisam estar versionados para o agente funcionar.
