@@ -13,9 +13,9 @@
 
 ## Adaptações nos Dados
 
-> Você modificou ou expandiu os dados mockados? Descreva aqui.
 
-Sim. Expandi os dados de transações, totalizando 36 transações entre agosto e outubro de 2025, com o intuito de ampliar o que o agente consegue responder. Alguns comportamentos foram variados intencionalmente entre os meses para enriquecer a análise:
+
+Os dados de transações foram expandidos, totalizando 36 transações entre agosto e outubro de 2025, com o intuito de ampliar o que o agente consegue responder. Alguns comportamentos foram variados intencionalmente entre os meses para enriquecer a análise:
 
 - Gastos com alimentação apresentam tendência de queda (R$ 730 em agosto → R$ 675 em setembro → R$ 570 em outubro), permitindo ao agente identificar melhora no padrão de gastos.
 - Gastos com saúde variam com eventos esporádicos, como uma consulta médica em setembro (R$ 180), simulando imprevistos reais.
@@ -28,68 +28,112 @@ Sim. Expandi os dados de transações, totalizando 36 transações entre agosto 
 
 ### Como os dados são carregados?
 
-> Descreva como seu agente acessa a base de conhecimento.
+O agente acessa a base de dados de forma automatizada e otimizada por meio do utilitário [data_loader.py](file:///c:/Users/Thiago/OneDrive/Documentos/Projeto%20Agente%20Dio/src/utils/data_loader.py). Em vez de usar bibliotecas como Pandas, a leitura é feita com módulos nativos do Python (`json` e `csv`), garantindo leveza e velocidade.
+
+Para evitar carregamentos repetitivos em cada interação do usuário, a função possui cache nativo do Streamlit utilizando o decorador `@st.cache_resource`.
 
 ```python
-import pandas as pd
+import csv
 import json
+from pathlib import Path
+import streamlit as st
 
-# Arquivos CSV
-historico_atendimento = pd.read_csv("data/historico_atendimento.csv", sep=",",encoding="utf-8")
-transacoes = pd.read_csv("data/transacoes.csv", sep=",", encoding="utf-8")
+@st.cache_resource
+def load_files(pasta: Path) -> str:
+    """
+    Carrega todos os arquivos .json e .csv de um diretório e
+    os formata em uma string estruturada para servir de contexto à LLM.
+    """
+    content = []
 
-# Arquivos JSON
-with open("data/perfil_investidor.json", "r", encoding="utf-8") as archive:
-    perfil = json.load(archive)
+    if not pasta.exists() or not pasta.is_dir():
+        return ""
 
-with open("data/produtos_financeiros.json", "r", encoding="utf-8") as archive:
-    produtos = json.load(archive)
+    # Ordena os arquivos para garantir consistência no prompt gerado
+    for file in sorted(pasta.iterdir()):
+        if file.suffix == ".json":
+            try:
+                data = json.loads(file.read_text(encoding="utf-8"))
+                text = json.dumps(data, ensure_ascii=False, indent=2)
+                content.append(f"### {file.name}\n{text}")
+            except Exception as e:
+                st.error(f"Erro ao ler arquivo JSON {file.name}: {e}")
 
+        elif file.suffix == ".csv":
+            try:
+                reader = csv.DictReader(file.read_text(encoding="utf-8").splitlines())
+                lines = [str(dict(row)) for row in reader]
+                text = "\n".join(lines)
+                content.append(f"### {file.name}\n{text}")
+            except Exception as e:
+                st.error(f"Erro ao ler arquivo CSV {file.name}: {e}")
+
+    return "\n\n".join(content)
 ```
 
 ### Como os dados são usados no prompt?
 
-> Os dados vão no system prompt? São consultados dinamicamente?
+Os dados agregados em formato de string estruturada são injetados diretamente no system prompt. O módulo [config.py](file:///c:/Users/Thiago/OneDrive/Documentos/Projeto%20Agente%20Dio/src/config.py) carrega as instruções do template de prompt contido em [system_prompt.txt](file:///c:/Users/Thiago/OneDrive/Documentos/Projeto%20Agente%20Dio/src/prompts/system_prompt.txt) e injeta o texto gerado dinamicamente no campo `{context}`.
 
-De forma simplificada, os dados serão injetados no system prompt, garantindo que o agente tenha o melhor contexto possível antes de responder. É válido lembrar que em soluções robustas o ideal é que os dados sejam consultados dinamicamente, via RAG ou chamadas a APIs.
+A chamada de montagem ocorre no ponto de entrada:
+```python
+# No app.py:
+context = load_files(DOCS_PATH)
+system_prompt = get_system_prompt(context)
+```
+
+---
+
+## Exemplo de Contexto Montado
+
+O trecho abaixo representa um exemplo real de como a base de conhecimento é formatada em string e injetada no prompt de sistema enviado ao Ollama:
 
 ```text
+Você é o ShieldMind, um assistente de planejamento financeiro pessoal.
+Seu papel é orientar o cliente com base nos dados fornecidos abaixo, de forma clara, 
+acolhedora e sem jargões técnicos desnecessários.
 
-PERFIL DO CLIENTE
+## Base de conhecimento:
+### historico_atendimento.csv
+{'data': '2025-09-15', 'canal': 'chat', 'tema': 'CDB', 'resumo': 'Cliente perguntou sobre rentabilidade e prazos', 'resolvido': 'sim'}
+{'data': '2025-09-22', 'canal': 'telefone', 'tema': 'Problema no app', 'resumo': 'Erro ao visualizar extrato foi corrigido', 'resolvido': 'sim'}
+{'data': '2025-10-01', 'canal': 'chat', 'tema': 'Tesouro Selic', 'resumo': 'Cliente pediu explicação sobre o funcionamento do Tesouro Direto', 'resolvido': 'sim'}
+{'data': '2025-10-12', 'canal': 'chat', 'tema': 'Metas financeiras', 'resumo': 'Cliente acompanhou o progresso da reserva de emergência', 'resolvido': 'sim'}
+{'data': '2025-10-25', 'canal': 'email', 'tema': 'Atualização cadastral', 'resumo': 'Cliente atualizou e-mail e telefone', 'resolvido': 'sim'}
 
+### perfil_investidor.json
 {
   "nome": "João Silva",
   "idade": 32,
   "profissao": "Analista de Sistemas",
-  "renda_mensal": 5000.00,
+  "renda_mensal": 5000.0,
   "perfil_investidor": "moderado",
   "objetivo_principal": "Construir reserva de emergência",
-  "patrimonio_total": 15000.00,
-  "reserva_emergencia_atual": 10000.00,
+  "patrimonio_total": 15000.0,
+  "reserva_emergencia_atual": 10000.0,
   "aceita_risco": false,
   "metas": [
     {
       "meta": "Completar reserva de emergência",
-      "valor_necessario": 15000.00,
+      "valor_necessario": 15000.0,
       "prazo": "2026-06"
     },
     {
       "meta": "Entrada do apartamento",
-      "valor_necessario": 50000.00,
+      "valor_necessario": 50000.0,
       "prazo": "2027-12"
     }
   ]
 }
 
-PRODUTOS FINANCEIROS
-
+### produtos_financeiros.json
 [
   {
     "nome": "Tesouro Selic",
     "categoria": "renda_fixa",
     "risco": "baixo",
     "rentabilidade": "100% da Selic",
-    "aporte_minimo": 30.00,
+    "aporte_minimo": 30.0,
     "indicado_para": "Reserva de emergência e iniciantes"
   },
   {
@@ -97,125 +141,12 @@ PRODUTOS FINANCEIROS
     "categoria": "renda_fixa",
     "risco": "baixo",
     "rentabilidade": "102% do CDI",
-    "aporte_minimo": 100.00,
+    "aporte_minimo": 100.0,
     "indicado_para": "Quem busca segurança com rendimento diário"
-  },
-  {
-    "nome": "LCI/LCA",
-    "categoria": "renda_fixa",
-    "risco": "baixo",
-    "rentabilidade": "95% do CDI",
-    "aporte_minimo": 1000.00,
-    "indicado_para": "Quem pode esperar 90 dias (isento de IR)"
-  },
-  {
-    "nome": "Fundo Multimercado",
-    "categoria": "fundo",
-    "risco": "medio",
-    "rentabilidade": "CDI + 2%",
-    "aporte_minimo": 500.00,
-    "indicado_para": "Perfil moderado que busca diversificação"
-  },
-  {
-    "nome": "Fundo de Ações",
-    "categoria": "fundo",
-    "risco": "alto",
-    "rentabilidade": "Variável",
-    "aporte_minimo": 100.00,
-    "indicado_para": "Perfil arrojado com foco no longo prazo"
   }
 ]
 
-HISTÓRICO DE ATENDIMENTO
-
-data,canal,tema,resumo,resolvido
-2025-09-15,chat,CDB,Cliente perguntou sobre rentabilidade e prazos,sim
-2025-09-22,telefone,Problema no app,Erro ao visualizar extrato foi corrigido,sim
-2025-10-01,chat,Tesouro Selic,Cliente pediu explicação sobre o funcionamento do Tesouro Direto,sim
-2025-10-12,chat,Metas financeiras,Cliente acompanhou o progresso da reserva de emergência,sim
-2025-10-25,email,Atualização cadastral,Cliente atualizou e-mail e telefone,sim
-
-TRANSAÇÕES
-
-data,descricao,categoria,valor,tipo
-2025-08-01,Salário,receita,5000.00,entrada
-2025-08-02,Aluguel,moradia,1200.00,saida
-2025-08-04,Supermercado,alimentacao,520.00,saida
-2025-08-05,Netflix,lazer,55.90,saida
-2025-08-06,Farmácia,saude,42.00,saida
-2025-08-08,Restaurante,alimentacao,95.00,saida
-2025-08-10,Uber,transporte,38.00,saida
-2025-08-12,Conta de Luz,moradia,165.00,saida
-2025-08-15,Academia,saude,99.00,saida
-2025-08-18,Combustível,transporte,230.00,saida
-2025-08-20,Show de música,lazer,120.00,saida
-2025-08-22,Supermercado,alimentacao,210.00,saida
-2025-08-28,Aplicação Tesouro Selic,investimento,300.00,saida
-2025-09-01,Salário,receita,5000.00,entrada
-2025-09-02,Aluguel,moradia,1200.00,saida
-2025-09-03,Supermercado,alimentacao,480.00,saida
-2025-09-05,Netflix,lazer,55.90,saida
-2025-09-07,Farmácia,saude,67.50,saida
-2025-09-09,Restaurante,alimentacao,140.00,saida
-2025-09-11,Uber,transporte,52.00,saida
-2025-09-13,Conta de Luz,moradia,172.00,saida
-2025-09-15,Academia,saude,99.00,saida
-2025-09-18,Combustível,transporte,245.00,saida
-2025-09-20,Consulta médica,saude,180.00,saida
-2025-09-23,Supermercado,alimentacao,195.00,saida
-2025-09-26,Aplicação Tesouro Selic,investimento,300.00,saida
-2025-10-01,Salário,receita,5000.00,entrada
-2025-10-02,Aluguel,moradia,1200.00,saida
-2025-10-03,Supermercado,alimentacao,450.00,saida
-2025-10-05,Netflix,lazer,55.90,saida
-2025-10-07,Farmácia,saude,89.00,saida
-2025-10-10,Restaurante,alimentacao,120.00,saida
-2025-10-12,Uber,transporte,45.00,saida
-2025-10-15,Conta de Luz,moradia,180.00,saida
-2025-10-20,Academia,saude,99.00,saida
-2025-10-25,Combustível,transporte,250.00,saida
-```
-
----
-
-## Exemplo de Contexto Montado
-
-> Mostre um exemplo de como os dados são formatados para o agente.
-
-O trecho abaixo representa como o system prompt é montado na prática — combinando a instrução de comportamento do agente com os dados do cliente já processados e formatados para leitura do modelo.
-
-```
-Você é o ShieldMind, um assistente de planejamento financeiro pessoal.
-Seu papel é orientar o cliente com base nos dados fornecidos abaixo,
-de forma clara, acolhedora e sem jargões técnicos desnecessários.
-Não execute transações, não forneça aconselhamento jurídico e sempre
-indique um profissional qualificado quando a situação exigir.
-
-=== PERFIL DO CLIENTE ===
-Nome: João Silva | Idade: 32 anos | Profissão: Analista de Sistemas
-Renda mensal: R$ 5.000 | Perfil: Moderado | Aceita risco: Não
-
-=== METAS ===
-1. Reserva de emergência: R$ 10.000 de R$ 15.000 concluídos (prazo: jun/2026)
-2. Entrada do apartamento: R$ 0 de R$ 50.000 concluídos (prazo: dez/2027)
-
-=== GASTOS DE OUTUBRO/2025 ===
-Moradia:      R$ 1.380  (27,6% da renda)
-Alimentação:  R$   570  (11,4% da renda)
-Transporte:   R$   295  (5,9% da renda)
-Saúde:        R$   188  (3,8% da renda)
-Lazer:        R$    55  (1,1% da renda)
-Investimento: R$     0  (0% da renda) sem aporte neste mês
-
-=== HISTÓRICO DE ATENDIMENTO (últimas interações) ===
-- out/2025: Acompanhou progresso da reserva de emergência (chat)
-- out/2025: Perguntou sobre Tesouro Selic (chat)
-- set/2025: Perguntou sobre CDB — rentabilidade e prazos (chat)
-
-=== PRODUTOS DISPONÍVEIS ===
-- Tesouro Selic (risco baixo) — indicado para reserva de emergência
-- CDB Liquidez Diária (risco baixo) — 102% do CDI, resgate diário
-- LCI/LCA (risco baixo) — isento de IR, carência de 90 dias
-- Fundo Multimercado (risco médio) — indicado para perfil moderado
-- Fundo de Ações (risco alto) — não indicado para este perfil
+### transacoes.csv
+{'data': '2025-08-01', 'descricao': 'Salário', 'categoria': 'receita', 'valor': '5000.00', 'tipo': 'entrada'}
+{'data': '2025-08-02', 'descricao': 'Aluguel', 'categoria': 'moradia', 'valor': '1200.00', 'tipo': 'saida'}
 ```
