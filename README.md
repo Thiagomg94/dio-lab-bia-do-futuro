@@ -76,6 +76,7 @@ llm_service.py ──► Ollama (llama3.1:8b, num_ctx=8192) ──► resposta
 │   ├── 03-prompts.md                 # Engenharia de prompts (regras + few-shot)
 │   ├── 04-metricas.md                # Testes, métricas e ciclo de depuração
 │   └── 05-pitch.md                   # Roteiro do pitch
+│   └── 06-ShieldMind-Pitch.pptx      # Slides do pitch
 │
 ├── 📁 src/
 │   ├── app.py                        # Interface Streamlit
