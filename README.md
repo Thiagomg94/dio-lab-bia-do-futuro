@@ -99,7 +99,7 @@ llm_service.py ──► Ollama (llama3.1:8b, num_ctx=8192) ──► resposta
 
 ```bash
 # 1. Clone o repositório
-git clone <url-do-repositorio>
+git clone <https://github.com/Thiagomg94/dio-lab-bia-do-futuro/tree/main>
 cd ShieldMind
 
 # 2. Crie e ative um ambiente virtual
