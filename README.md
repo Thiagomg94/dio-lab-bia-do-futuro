@@ -1,149 +1,162 @@
-# 🤖 Agente Financeiro Inteligente com IA Generativa
+# 🛡️ ShieldMind — Assistente de Planejamento Financeiro Pessoal
 
-## Contexto
+Agente conversacional de planejamento financeiro construído com IA Generativa local (Ollama), desenvolvido como desafio de bootcamp a partir do template [`lab-agente-financeiro`](#).
 
-Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, você vai idealizar e prototipar um agente financeiro que utiliza IA Generativa para:
-
-- **Antecipar necessidades** ao invés de apenas responder perguntas
-- **Personalizar** sugestões com base no contexto de cada cliente
-- **Cocriar soluções** financeiras de forma consultiva
-- **Garantir segurança** e confiabilidade nas respostas (anti-alucinação)
-
-> [!TIP]
-> Na pasta [`examples/`](./examples/) você encontra referências de implementação para cada etapa deste desafio.
+> O ShieldMind simula um assistente financeiro bank-facing: ajuda o cliente a entender seus gastos, acompanhar metas e receber sugestões de produtos compatíveis com seu perfil de investidor — sempre dentro de guardrails explícitos contra conselho jurídico/tributário e exposição de dados sensíveis.
 
 ---
 
-## O Que Você Deve Entregar
+## Sobre o projeto
 
-### 1. Documentação do Agente
+O ShieldMind responde perguntas sobre a vida financeira de um cliente com base em dados mockados (transações, metas, perfil de investidor e produtos disponíveis), rodando 100% local via [Ollama](https://ollama.ai) — sem custo de API e sem enviar dados a serviços externos.
 
-Defina **o que** seu agente faz e **como** ele funciona:
+**O que o agente faz:**
+- Analisa gastos por categoria e por mês
+- Acompanha o progresso de metas financeiras (ex: reserva de emergência)
+- Recomenda produtos financeiros compatíveis com o perfil de risco do cliente
+- Explica conceitos financeiros de forma simples e sem jargão
 
-- **Caso de Uso:** Qual problema financeiro ele resolve? (ex: consultoria de investimentos, planejamento de metas, alertas de gastos)
-- **Persona e Tom de Voz:** Como o agente se comporta e se comunica?
-- **Arquitetura:** Fluxo de dados e integração com a base de conhecimento
-- **Segurança:** Como evitar alucinações e garantir respostas confiáveis?
+**O que o agente *não* faz (por design):**
+- Não fornece conselho jurídico, tributário ou atuarial — sempre redireciona para um profissional qualificado
+- Não executa transações nem armazena credenciais ou dados sensíveis
+- Não garante rentabilidade ou retorno de produtos financeiros
+- Não recomenda produtos com risco incompatível com o perfil declarado do cliente, mesmo que solicitado explicitamente
 
-📄 **Template:** [`docs/01-documentacao-agente.md`](./docs/01-documentacao-agente.md)
+## Cliente mockado
 
----
-
-### 2. Base de Conhecimento
-
-Utilize os **dados mockados** disponíveis na pasta [`data/`](./data/) para alimentar seu agente:
-
-| Arquivo | Formato | Descrição |
-|---------|---------|-----------|
-| `transacoes.csv` | CSV | Histórico de transações do cliente |
-| `historico_atendimento.csv` | CSV | Histórico de atendimentos anteriores |
-| `perfil_investidor.json` | JSON | Perfil e preferências do cliente |
-| `produtos_financeiros.json` | JSON | Produtos e serviços disponíveis |
-
-Você pode adaptar ou expandir esses dados conforme seu caso de uso.
-
-📄 **Template:** [`docs/02-base-conhecimento.md`](./docs/02-base-conhecimento.md)
+Os testes e exemplos deste projeto usam um cliente fictício único — **João Silva**, perfil de investidor **moderado**, com duas metas ativas: completar uma reserva de emergência (R$ 15.000 até junho/2026) e juntar entrada para um apartamento (R$ 50.000 até dezembro/2027). Os dados de transações cobrem três meses (ago-out/2025) com variações intencionais de comportamento (queda em gastos com alimentação, ausência de aporte em outubro) para enriquecer a análise.
 
 ---
 
-### 3. Prompts do Agente
-
-Documente os prompts que definem o comportamento do seu agente:
-
-- **System Prompt:** Instruções gerais de comportamento e restrições
-- **Exemplos de Interação:** Cenários de uso com entrada e saída esperada
-- **Tratamento de Edge Cases:** Como o agente lida com situações limite
-
-📄 **Template:** [`docs/03-prompts.md`](./docs/03-prompts.md)
-
----
-
-### 4. Aplicação Funcional
-
-Desenvolva um **protótipo funcional** do seu agente:
-
-- Chatbot interativo (sugestão: Streamlit, Gradio ou similar)
-- Integração com LLM (via API ou modelo local)
-- Conexão com a base de conhecimento
-
-📁 **Pasta:** [`src/`](./src/)
-
----
-
-### 5. Avaliação e Métricas
-
-Descreva como você avalia a qualidade do seu agente:
-
-**Métricas Sugeridas:**
-- Precisão/assertividade das respostas
-- Taxa de respostas seguras (sem alucinações)
-- Coerência com o perfil do cliente
-
-📄 **Template:** [`docs/04-metricas.md`](./docs/04-metricas.md)
-
----
-
-### 6. Pitch
-
-Grave um **pitch de 3 minutos** (estilo elevador) apresentando:
-
-- Qual problema seu agente resolve?
-- Como ele funciona na prática?
-- Por que essa solução é inovadora?
-
-📄 **Template:** [`docs/05-pitch.md`](./docs/05-pitch.md)
-
----
-
-## Ferramentas Sugeridas
-
-Todas as ferramentas abaixo possuem versões gratuitas:
-
-| Categoria | Ferramentas |
-|-----------|-------------|
-| **LLMs** | [ChatGPT](https://chat.openai.com/), [Copilot](https://copilot.microsoft.com/), [Gemini](https://gemini.google.com/), [Claude](https://claude.ai/), [Ollama](https://ollama.ai/) |
-| **Desenvolvimento** | [Streamlit](https://streamlit.io/), [Gradio](https://www.gradio.app/), [Google Colab](https://colab.research.google.com/) |
-| **Orquestração** | [LangChain](https://www.langchain.com/), [LangFlow](https://www.langflow.org/), [CrewAI](https://www.crewai.com/) |
-| **Diagramas** | [Mermaid](https://mermaid.js.org/), [Draw.io](https://app.diagrams.net/), [Excalidraw](https://excalidraw.com/) |
-
----
-
-## Estrutura do Repositório
+## Arquitetura
 
 ```
-📁 lab-agente-financeiro/
+Pergunta do usuário (Streamlit)
+        │
+        ▼
+data/*.json, *.csv ──► data_loader.py ──► contexto pré-processado
+        │                                  (somas pré-calculadas por
+        │                                   mês/categoria/descrição)
+        ▼
+src/prompts/system_prompt.txt + contexto ──► system_prompt final
+        │
+        ▼
+llm_service.py ──► Ollama (llama3.1:8b, num_ctx=8192) ──► resposta
+```
+
+**Stack:**
+
+| Camada | Tecnologia |
+|--------|------------|
+| Interface | Streamlit |
+| LLM | Ollama (local) — `llama3.1:8b` |
+| Linguagem | Python |
+| Dados | JSON + CSV mockados (sem banco de dados) |
+
+> RAG foi avaliado e descartado para este projeto, dado o prazo do desafio — a estratégia adotada foi injeção direta de contexto pré-processado no system prompt.
+
+### Estrutura do repositório
+
+```
+📁 ShieldMind/
 │
 ├── 📄 README.md
+├── 📄 requirements.txt
+├── 📄 .env.example
 │
-├── 📁 data/                          # Dados mockados para o agente
-│   ├── historico_atendimento.csv     # Histórico de atendimentos (CSV)
-│   ├── perfil_investidor.json        # Perfil do cliente (JSON)
-│   ├── produtos_financeiros.json     # Produtos disponíveis (JSON)
-│   └── transacoes.csv                # Histórico de transações (CSV)
+├── 📁 data/                          # Dados mockados (cliente João Silva)
+│   ├── transacoes.csv
+│   ├── historico_atendimento.csv
+│   ├── perfil_investidor.json
+│   └── produtos_financeiros.json
 │
 ├── 📁 docs/                          # Documentação do projeto
 │   ├── 01-documentacao-agente.md     # Caso de uso e arquitetura
 │   ├── 02-base-conhecimento.md       # Estratégia de dados
-│   ├── 03-prompts.md                 # Engenharia de prompts
-│   ├── 04-metricas.md                # Avaliação e métricas
+│   ├── 03-prompts.md                 # Engenharia de prompts (regras + few-shot)
+│   ├── 04-metricas.md                # Testes, métricas e ciclo de depuração
 │   └── 05-pitch.md                   # Roteiro do pitch
 │
-├── 📁 src/                           # Código da aplicação
-│   └── app.py                        # (exemplo de estrutura)
+├── 📁 src/
+│   ├── app.py                        # Interface Streamlit
+│   ├── config.py                     # Variáveis de ambiente e carregamento do prompt
+│   ├── prompts/
+│   │   └── system_prompt.txt         # System prompt em produção
+│   ├── utils/
+│   │   └── data_loader.py            # Leitura e pré-processamento dos dados
+│   └── services/
+│       └── llm_service.py            # Integração com o Ollama
 │
 ├── 📁 assets/                        # Imagens e diagramas
-│   └── ...
-│
-└── 📁 examples/                      # Referências e exemplos
-    └── README.md
 ```
 
 ---
 
-## Dicas Finais
+## Como executar
 
-1. **Comece pelo prompt:** Um bom system prompt é a base de um agente eficaz
-2. **Use os dados mockados:** Eles garantem consistência e evitam problemas com dados sensíveis
-3. **Foque na segurança:** No setor financeiro, evitar alucinações é crítico
-4. **Teste cenários reais:** Simule perguntas que um cliente faria de verdade
-5. **Seja direto no pitch:** 3 minutos passam rápido, vá ao ponto
+**Pré-requisitos:** Python 3.10+, [Ollama](https://ollama.ai) instalado.
+
+```bash
+# 1. Clone o repositório
+git clone <url-do-repositorio>
+cd ShieldMind
+
+# 2. Crie e ative um ambiente virtual
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate   # Linux/Mac
+
+# 3. Instale as dependências
+pip install -r requirements.txt
+
+# 4. Baixe o modelo no Ollama
+ollama pull llama3.1:8b
+
+# 5. Configure as variáveis de ambiente
+copy .env.example .env      # Windows
+# cp .env.example .env        # Linux/Mac
+# Edite o .env se necessário (OLLAMA_MODEL=llama3.1:8b)
+
+# 6. Rode a aplicação
+streamlit run src/app.py
+```
+
+---
+
+## Decisões técnicas e aprendizados
+
+Esta seção documenta as decisões mais relevantes tomadas durante o desenvolvimento — incluindo bugs encontrados e corrigidos, não só o resultado final (ver histórico completo em [`docs/04-metricas.md`](./docs/04-metricas.md)):
+
+- **Modelo:** iniciado com `llama3.2` (3B) e migrado para `llama3.1:8b` — o modelo menor alucinava conceitos financeiros e tinha dificuldade em generalizar regras de comportamento para frases não vistas explicitamente nos exemplos do prompt.
+- **Pré-cálculo de somas (`data_loader.py`):** consultas sobre gastos por categoria/mês falhavam quando o LLM precisava filtrar e somar transações brutas manualmente — confundia o campo `descricao` com `categoria` e misturava meses. A correção move a soma para Python; o modelo só localiza o valor já calculado.
+- **Janela de contexto (`num_ctx`):** o maior bug encontrado no projeto não estava no modelo nem no prompt — era a ausência de `num_ctx` explícito na chamada ao Ollama. O padrão do Ollama corta silenciosamente o início do prompt quando o total excede o limite, o que removia as regras de comportamento e os dados de perfil/metas sem nenhum erro visível, parecendo um problema de comportamento do agente.
+- **Few-shot prompting:** regras descritas em texto não foram suficientes para o modelo generalizar para variações de fraseado (ex: pergunta tributária sobre aluguel sem mencionar "Imposto de Renda"). Exemplos literais com os dados reais do cliente mockado resolveram esse gap.
+
+## Testes e métricas
+
+8 cenários de teste cobrindo assertividade, segurança, coerência com o perfil e conformidade com as regras de comportamento. Após o ciclo de correções acima, o agente passa em **8/8 testes**.
+
+Ver detalhamento completo de cada teste, incluindo o histórico de falhas e as causas raiz identificadas, em [`docs/04-metricas.md`](./docs/04-metricas.md).
+
+## Possíveis melhorias futuras
+
+- Padronizar formatação de moeda (uso consistente de "R$")
+- Monitorar `num_ctx` conforme o histórico de conversa cresce (todo o histórico é reenviado a cada turno)
+- Resolver pequenas imprecisões técnicas em explicações de conceitos macroeconômicos (ex: distinção entre renda fixa pré e pós-fixada)
+
+---
+
+## Documentação completa
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [`docs/01-documentacao-agente.md`](./docs/01-documentacao-agente.md) | Caso de uso, persona e arquitetura |
+| [`docs/02-base-conhecimento.md`](./docs/02-base-conhecimento.md) | Estratégia de dados mockados |
+| [`docs/03-prompts.md`](./docs/03-prompts.md) | System prompt, regras e exemplos de few-shot |
+| [`docs/04-metricas.md`](./docs/04-metricas.md) | Testes, métricas e ciclo de depuração |
+| [`docs/05-pitch.md`](./docs/05-pitch.md) | Roteiro do pitch |
+
+---
+
+*Projeto desenvolvido como desafio de bootcamp, a partir do template `lab-agente-financeiro`.*
+
